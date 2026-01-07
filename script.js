@@ -1,62 +1,59 @@
 let count = 0;
 
 const fire = document.getElementById("fire");
+const game = document.getElementById("game");
 const frame1 = document.getElementById("frame1");
 const frame2 = document.getElementById("frame2");
-const popSound = document.getElementById("popSound");
 
-fire.addEventListener("touchstart", tapFire);
-fire.addEventListener("click", tapFire);
-
-function tapFire(e) {
-  e.preventDefault();
+fire.addEventListener("click", () => {
   if (count >= 19) return;
-
   count++;
-  popSound.currentTime = 0;
-  popSound.play();
 
-  if (navigator.vibrate) {
-    navigator.vibrate(40);
-  }
+  // vibrate HP
+  if (navigator.vibrate) navigator.vibrate(40);
 
-  showNumber(count);
+  // sound
+  new Audio("pop.mp3").play();
 
+  // angka random
+  const num = document.createElement("div");
+  num.textContent = count;
+  num.style.position = "absolute";
+  num.style.fontSize = "46px";
+  num.style.fontWeight = "bold";
+  num.style.color = `hsl(${Math.random() * 360},100%,70%)`;
+  num.style.left = Math.random() * 200 + 30 + "px";
+  num.style.top = Math.random() * 250 + 90 + "px";
+  num.style.animation = "pop 0.8s ease-out forwards";
+
+  game.appendChild(num);
+  setTimeout(() => num.remove(), 800);
+
+  // api mati pelan-pelan
+  fire.style.opacity = 1 - count / 19;
+
+  // pindah frame
   if (count === 19) {
-    fire.classList.add("fire-off");
-    launchConfetti();
     setTimeout(() => {
       frame1.classList.remove("active");
       frame2.classList.add("active");
-    }, 1600);
+      confetti();
+    }, 600);
   }
-}
+});
 
-function showNumber(num) {
-  const span = document.createElement("span");
-  span.className = "number";
-  span.innerText = num;
-  span.style.left = Math.random() * 220 + "px";
-  span.style.top = Math.random() * 320 + "px";
-  span.style.color = randomColor();
-  frame1.appendChild(span);
-
-  setTimeout(() => span.remove(), 800);
-}
-
-function randomColor() {
-  const colors = ["#FFD700", "#00FFFF", "#FF69B4", "#ADFF2F", "#FF4500"];
-  return colors[Math.floor(Math.random() * colors.length)];
-}
-
-function launchConfetti() {
-  for (let i = 0; i < 30; i++) {
+// confetti
+function confetti() {
+  for (let i = 0; i < 35; i++) {
     const c = document.createElement("div");
-    c.className = "confetti";
+    c.style.position = "absolute";
+    c.style.width = "8px";
+    c.style.height = "8px";
+    c.style.background = `hsl(${Math.random() * 360},100%,60%)`;
     c.style.left = Math.random() * 260 + "px";
-    c.style.background = randomColor();
-    frame1.appendChild(c);
-
+    c.style.top = "-10px";
+    c.style.animation = "fall 2s linear forwards";
+    game.appendChild(c);
     setTimeout(() => c.remove(), 2000);
   }
 }
